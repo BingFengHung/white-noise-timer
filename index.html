@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Ambient Sound & Focus Timer - 白噪音專注計時器</title>
+  
+  <!-- PWA & iOS Specific Meta Tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="專注白噪音">
+  <meta name="format-detection" content="telephone=no">
+  <link rel="apple-touch-icon" href="icon.svg">
+  
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  
+  <header>
+    <div class="logo">
+      <img src="icon.svg" alt="Logo">
+      <h1>專注白噪音</h1>
+    </div>
+    <button class="pwa-btn" id="install-btn">安裝 App</button>
+  </header>
+
+  <main>
+    <!-- Pomodoro Preset Tabs -->
+    <div class="presets">
+      <button class="preset-btn active" data-time="1500" data-label="專注 (25m)">🍅 25m 專注</button>
+      <button class="preset-btn" data-time="300" data-label="休息 (5m)">☕ 5m 休息</button>
+      <button class="preset-btn" data-time="900" data-label="長退 (15m)">🏝️ 15m 休息</button>
+    </div>
+
+    <!-- Circular Timer -->
+    <div class="timer-container">
+      <svg class="timer-svg" viewBox="0 0 100 100">
+        <circle class="timer-bg-circle" cx="50" cy="50" r="45"></circle>
+        <circle class="timer-progress-circle" id="timer-progress" cx="50" cy="50" r="45" stroke-dasharray="282.7" stroke-dashoffset="0"></circle>
+      </svg>
+      <div class="timer-text-container">
+        <div class="timer-time" id="timer-time">25:00</div>
+        <div class="timer-label" id="timer-label">工作時間</div>
+      </div>
+    </div>
+
+    <!-- Timer Control Buttons -->
+    <div class="timer-actions">
+      <button class="btn btn-start" id="btn-start">▶ 開始</button>
+      <button class="btn" id="btn-reset">⏱ 設為 25m</button>
+    </div>
+
+    <!-- Sound Selection Board -->
+    <div class="soundboard">
+      <h2 class="section-title">自訂背景白噪音</h2>
+      
+      <!-- Sound 1: Rain -->
+      <div class="sound-card" id="card-rain">
+        <div class="sound-icon">🌧️</div>
+        <div class="sound-info">
+          <div class="sound-header">
+            <span class="sound-name">窗外雨聲</span>
+            <label class="switch">
+              <input type="checkbox" id="switch-rain" data-sound="rain">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="volume-row">
+            <input type="range" id="vol-rain" class="volume-slider" min="0" max="100" value="50">
+          </div>
+        </div>
+      </div>
+
+      <!-- Sound 2: Ocean -->
+      <div class="sound-card" id="card-ocean">
+        <div class="sound-icon">🌊</div>
+        <div class="sound-info">
+          <div class="sound-header">
+            <span class="sound-name">潮起潮落</span>
+            <label class="switch">
+              <input type="checkbox" id="switch-ocean" data-sound="ocean">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="volume-row">
+            <input type="range" id="vol-ocean" class="volume-slider" min="0" max="100" value="40">
+          </div>
+        </div>
+      </div>
+
+      <!-- Sound 3: Fire -->
+      <div class="sound-card" id="card-fire">
+        <div class="sound-icon">🔥</div>
+        <div class="sound-info">
+          <div class="sound-header">
+            <span class="sound-name">壁爐柴火</span>
+            <label class="switch">
+              <input type="checkbox" id="switch-fire" data-sound="fire">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="volume-row">
+            <input type="range" id="vol-fire" class="volume-slider" min="0" max="100" value="50">
+          </div>
+        </div>
+      </div>
+
+      <!-- Sound 4: Wind -->
+      <div class="sound-card" id="card-wind">
+        <div class="sound-icon">🍃</div>
+        <div class="sound-info">
+          <div class="sound-header">
+            <span class="sound-name">山谷微風</span>
+            <label class="switch">
+              <input type="checkbox" id="switch-wind" data-sound="wind">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="volume-row">
+            <input type="range" id="vol-wind" class="volume-slider" min="0" max="100" value="30">
+          </div>
+        </div>
+      </div>
+
+      <!-- Sound 5: Deep Focus Binaural -->
+      <div class="sound-card" id="card-focus">
+        <div class="sound-icon">🧘</div>
+        <div class="sound-info">
+          <div class="sound-header">
+            <span class="sound-name">深層阿爾法波</span>
+            <label class="switch">
+              <input type="checkbox" id="switch-focus" data-sound="focus">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="volume-row">
+            <input type="range" id="vol-focus" class="volume-slider" min="0" max="100" value="30">
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- iOS PWA Manual Guide Dialog -->
+  <div class="modal" id="pwa-modal">
+    <div class="modal-content">
+      <button class="modal-close" id="modal-close">✕</button>
+      <h2 style="font-size: 1.2rem;">安裝至 iPhone 主畫面</h2>
+      <p style="color: var(--text-dim); font-size: 0.85rem; margin-bottom: 10px;">請使用 Safari 瀏覽器以獲得完整體驗：</p>
+      <div class="modal-steps">
+        <div class="modal-step">
+          <div class="step-num">1</div>
+          <div>點擊底部工具列的 <strong>分享圖示</strong> (⎙)</div>
+        </div>
+        <div class="modal-step">
+          <div class="step-num">2</div>
+          <div>在選項中選擇 <strong>「加入主畫面」</strong></div>
+        </div>
+        <div class="modal-step">
+          <div class="step-num">3</div>
+          <div>點擊右上角的 <strong>「新增」</strong> 即可！</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
