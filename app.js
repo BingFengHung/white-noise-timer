@@ -428,6 +428,7 @@ function startTimer() {
       clearInterval(timerInterval);
       timerRunning = false;
       playAlertTone();
+      saveFocusSession(currentLabel, totalDuration);
       alert(`時間到！已完成${currentLabel}。`);
       resetTimerState();
     }
@@ -548,4 +549,18 @@ if (refreshBtn) {
     url.searchParams.set('clear-cache', Date.now().toString());
     window.location.href = url.toString();
   });
+}
+
+function saveFocusSession(label, duration) {
+  try {
+    const sessions = JSON.parse(localStorage.getItem('focus_sessions') || '[]');
+    sessions.push({
+      label: label,
+      duration: duration,
+      timestamp: Date.now()
+    });
+    localStorage.setItem('focus_sessions', JSON.stringify(sessions));
+  } catch (e) {
+    console.error('Failed to save focus session:', e);
+  }
 }
