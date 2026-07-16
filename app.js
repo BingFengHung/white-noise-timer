@@ -508,3 +508,44 @@ document.addEventListener('visibilitychange', async () => {
     requestWakeLock();
   }
 });
+
+// Clear cache & force refresh handler
+const refreshBtn = document.getElementById('refresh-btn');
+if (refreshBtn) {
+  refreshBtn.addEventListener('click', async () => {
+    if (typeof showToast === 'function') {
+      showToast('正在清除快取並重新載入...');
+    } else {
+      alert('正在清除快取並重新載入...');
+    }
+    
+    // Unregister service workers
+    if ('serviceWorker' in navigator) {
+      try {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        for (const registration of registrations) {
+          await registration.unregister();
+        }
+      } catch (e) {
+        console.error('Service Worker unregistration failed:', e);
+      }
+    }
+    
+    // Clear Cache Storage
+    if ('caches' in window) {
+      try {
+        const keys = await caches.keys();
+        for (const key of keys) {
+          await caches.delete(key);
+        }
+      } catch (e) {
+        console.error('Cache deletion failed:', e);
+      }
+    }
+    
+    // Reload with cache buster
+    const url = new URL(window.location.href);
+    url.searchParams.set('clear-cache', Date.now().toString());
+    window.location.href = url.toString();
+  });
+}
